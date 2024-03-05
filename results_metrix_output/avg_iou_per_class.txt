@@ -1,0 +1,504 @@
+Epoch: 1
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 2
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 3
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 4
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 5
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 6
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 7
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 8
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 9
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 10
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 11
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 12
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 13
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 14
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 15
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 16
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 17
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 18
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 19
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 20
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 21
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 22
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 23
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 24
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 25
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 26
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 27
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 28
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 29
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 30
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 31
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 32
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 33
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 34
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 35
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 36
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 37
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 38
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 39
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 40
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 41
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 42
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 43
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 44
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 45
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 46
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 47
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 48
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 49
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 50
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 51
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 52
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 53
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 54
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 55
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 56
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 57
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 58
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 59
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 60
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 61
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 62
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 63
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 64
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 65
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 66
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 67
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 68
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 69
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 70
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 71
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan
+Epoch: 72
+Class 0: nan
+Class 1: nan
+Class 2: nan
+Class 3: nan
+Class 4: nan
+Class 5: nan

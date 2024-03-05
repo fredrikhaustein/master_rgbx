@@ -4,6 +4,8 @@ import sys
 import time
 import argparse
 from tqdm import tqdm
+import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 import torch
 import torch.nn as nn
@@ -20,6 +22,7 @@ from utils.lr_policy import WarmUpPolyLR
 from engine.engine import Engine
 from engine.logger import get_logger
 from utils.pyt_utils import all_reduce_tensor
+from utils.calculate_matrix import calculate_iou,calculate_iou_per_class
 
 from tensorboardX import SummaryWriter
 
@@ -41,7 +44,7 @@ with Engine(custom_parser=parser) as engine:
 
     # data loader
     train_loader, train_sampler = get_train_loader(engine, RGBXDataset)
-
+    print(config.dataset_path)
     if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
         tb_dir = config.tb_dir + '/{}'.format(time.strftime("%b%d_%d-%H-%M", time.localtime()))
         generate_tb_dir = config.tb_dir + '/tb'
@@ -105,18 +108,37 @@ with Engine(custom_parser=parser) as engine:
         dataloader = iter(train_loader)
 
         sum_loss = 0
+        iou_scores = []  # Store IoU scores for each batch
+
+        # Initialize lists to store predictions and ground truths for the epoch
+        all_preds = []
+        all_gts = []
+        iou_scores_per_class = [[] for _ in range(6)]
 
         for idx in pbar:
             engine.update_iteration(epoch, idx)
 
-            minibatch = dataloader.next()
+            minibatch = next(dataloader)
+            # print(minibatch)
             imgs = minibatch['data']
             gts = minibatch['label']
             modal_xs = minibatch['modal_x']
-
+            
             imgs = imgs.cuda(non_blocking=True)
             gts = gts.cuda(non_blocking=True)
             modal_xs = modal_xs.cuda(non_blocking=True)
+            
+            # print("Unique labels in gts:", gts.unique())
+            # n_class = 2
+
+            # valid_labels = (gts >= 0) & (gts < n_class)
+            # if not valid_labels.all():
+            #     invalid_labels = gts[~valid_labels]
+            #     print(f"Invalid labels found: {invalid_labels.unique()}")
+            #     raise ValueError("Labels outside of expected range detected.")
+
+            # Assuming CrossEntropyLoss is used and 255 should be ignored
+            # criterion = nn.CrossEntropyLoss(ignore_index=255)
 
             aux_rate = 0.2
             loss = model(imgs, modal_xs, gts)
@@ -132,8 +154,35 @@ with Engine(custom_parser=parser) as engine:
             current_idx = (epoch- 1) * config.niters_per_epoch + idx 
             lr = lr_policy.get_lr(current_idx)
 
-            for i in range(len(optimizer.param_groups)):
-                optimizer.param_groups[i]['lr'] = lr
+            # with torch.no_grad():
+            #     preds = torch.argmax(model(imgs, modal_xs), dim=1)  # Convert logits to predictions
+
+            # Store predictions and ground truths
+            # all_preds.append(preds.cpu().numpy())
+            # all_gts.append(gts.cpu().numpy())
+
+            # Assuming all_gts and all_preds are lists of arrays or lists, you first concatenate them into a single array
+            # all_gts_array = np.concatenate([np.array(gt) for gt in all_gts])
+            # all_preds_array = np.concatenate([np.array(pred) for pred in all_preds])
+
+            # Now you can flatten them
+            # all_gts_flat = all_gts_array.flatten()
+            # all_preds_flat = all_preds_array.flatten()
+
+            # Calculate IoU and store
+            # iou = calculate_iou(preds.cpu(), gts.cpu(), n_classes=config.num_classes)  # Adjust n_classes as per your dataset
+            # ious = calculate_iou_per_class(preds.cpu(), gts.cpu(), n_classes=config.num_classes)
+
+            # Compute metrics precision, recall and f1 score
+            # precision = precision_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
+            # recall = recall_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
+            # f1 = f1_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
+
+            
+            # iou_scores.append(iou)
+
+            # for i in range(len(optimizer.param_groups)):
+                # optimizer.param_groups[i]['lr'] = lr
 
             if engine.distributed:
                 sum_loss += reduce_loss.item()
@@ -150,9 +199,28 @@ with Engine(custom_parser=parser) as engine:
 
             del loss
             pbar.set_description(print_str, refresh=False)
-        
+
+        # avg_iou = np.mean([iou for iou in iou_scores if not np.isnan(iou)])
+        # avg_iou_per_class = [np.nanmean(cls_scores) if cls_scores else np.nan for cls_scores in iou_scores_per_class]
+
+        # Define the file path for storing the metrics
+        # metrics_file_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results_metrix_output/avg_iou_per_class.txt'
+
+        # Ensure the directory exists
+        # os.makedirs(os.path.dirname(metrics_file_path), exist_ok=True)
+
+        # Append avg_iou_per_class to the file with epoch information
+        # with open(metrics_file_path, 'a') as file:  # Open in append mode
+        #     file.write(f"Epoch: {epoch}\n")
+        #     for class_index, iou in enumerate(avg_iou_per_class):
+        #         file.write(f"Class {class_index}: {iou}\n")
+
         if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
             tb.add_scalar('train_loss', sum_loss / len(pbar), epoch)
+            # tb.add_scalar('train_iou', avg_iou, epoch)
+            # # Loop through each class's IoU and log it separately
+            # for cls_index, cls_iou in enumerate(avg_iou_per_class):
+            #     tb.add_scalar(f'train_iou_class_{cls_index}', cls_iou, epoch)
 
         if (epoch >= config.checkpoint_start_epoch) and (epoch % config.checkpoint_step == 0) or (epoch == config.nepochs):
             if engine.distributed and (engine.local_rank == 0):

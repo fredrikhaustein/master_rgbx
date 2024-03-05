@@ -50,6 +50,35 @@ def get_ade_colors():
 
     return colors
 
+def get_class_colors():
+    """
+    Returns a list of RGB colors for the classes in the dataset.
+
+    Modify the colors as needed for your specific dataset.
+    """
+    return [
+        (255, 0, 0),    # Class 0 color (e.g., Red)
+        (0, 255, 0),    # Class 1 color (e.g., Green)
+        (0, 0, 255),    # Class 2 color (e.g., Blue)
+        # Add more colors for additional classes
+    ]
+
+def get_class_colors_six():
+    """
+    Returns a list of RGB colors for six classes in the dataset.
+
+    Modify the colors as needed for your specific dataset.
+    """
+    return [
+        (255, 0, 0),    # Class 0 color (e.g., Red)
+        (0, 255, 0),    # Class 1 color (e.g., Green)
+        (0, 0, 255),    # Class 2 color (e.g., Blue)
+        (255, 255, 0),  # Class 3 color (e.g., Yellow)
+        (255, 0, 255),  # Class 4 color (e.g., Magenta)
+        (0, 255, 255),  # Class 5 color (e.g., Cyan)
+        # Add more colors if you have more than six classes
+    ]
+
 
 def print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, class_names=None, show_no_back=False, no_print=False):
     n = iou.size
@@ -72,5 +101,32 @@ def print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, class_names=None, show_n
     if not no_print:
         print(line)
     return line
+
+def print_metrics(iou, recall, f1_scores, precision, class_names=None, no_print=False):
+    n = len(iou)  # Assuming iou, recall, f1_scores, and precision have the same length
+    lines = []
+    for i in range(n):
+        if class_names is None:
+            cls = 'Class %d:' % (i+1)
+        else:
+            cls = '%d %s' % (i+1, class_names[i])
+        lines.append('%-8s\tIoU: %.3f%%\tRecall: %.3f%%\tF1 Score: %.3f%%\tPrecision: %.3f%%' % (cls, iou[i] * 100, recall[i] * 100, f1_scores[i] * 100, precision[i] * 100))
+
+    # Compute mean values for each metric
+    mean_iou = np.nanmean(iou)
+    mean_recall = np.nanmean(recall)
+    mean_f1 = np.nanmean(f1_scores)
+    mean_precision = np.nanmean(precision)
+
+    # Append mean values
+    lines.append('----------')
+    lines.append('Mean Values\tIoU: %.3f%%\tRecall: %.3f%%\tF1 Score: %.3f%%\tPrecision: %.3f%%' % (mean_iou * 100, mean_recall * 100, mean_f1 * 100, mean_precision * 100))
+
+    # Join all lines into a single string
+    line = "\n".join(lines)
+    if not no_print:
+        print(line)
+    return line
+
 
 

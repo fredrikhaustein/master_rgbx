@@ -2,13 +2,14 @@ import os
 import cv2
 import argparse
 import numpy as np
+from PIL import Image
 
 import torch
 import torch.nn as nn
 
 from config import config
 from utils.pyt_utils import ensure_dir, link_file, load_model, parse_devices
-from utils.visualize import print_iou, show_img
+from utils.visualize import print_iou, show_img, get_class_colors,print_metrics
 from engine.evaluator import Evaluator
 from engine.logger import get_logger
 from utils.metric import hist_info, compute_score
@@ -48,7 +49,8 @@ class SegEvaluator(Evaluator):
             logger.info('Save the image ' + fn)
 
         if self.show_image:
-            colors = self.dataset.get_class_colors
+            print(self.dataset)
+            colors = self.dataset.get_class_colors()
             image = img
             clean = np.zeros(label.shape)
             comp_img = show_img(colors, config.background, image, clean,
@@ -70,10 +72,38 @@ class SegEvaluator(Evaluator):
             labeled += d['labeled']
             count += 1
 
-        iou, mean_IoU, _, freq_IoU, mean_pixel_acc, pixel_acc = compute_score(hist, correct, labeled)
-        result_line = print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc,
-                                dataset.class_names, show_no_back=False)
+        # Compute overall IoU, mean IoU, etc.
+        iou, mean_IoU, mean_IoU_no_back, freq_IoU, mean_pixel_acc, pixel_acc, precision, recall, f1_score, mean_precision, mean_recall, mean_f1_score = compute_score(hist, correct, labeled)
+        # result_line = print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, dataset.class_names, show_no_back=False)
+        result_line = print_metrics(iou, recall, f1_score, precision, class_names=None, no_print=False)
+
+        # Define the directory and file paths
+        directory_path = 'results_metrics_output'
+        os.makedirs(directory_path, exist_ok=True)  # Ensure the directory exists
+        metrics_file_path = os.path.join(directory_path, 'evaluation_metrics_binary_1.txt')
+        confusion_matrix_file_path = os.path.join(directory_path, 'confusion_matrix.npy')
+
+        # Write metrics to file
+        with open(metrics_file_path, 'w') as file:
+            file.write(f"IoU per class: {iou}")
+            file.write(f"Pixel accuracy: {pixel_acc}")
+            file.write(f"Precision per class: {precision}\n")
+            file.write(f"Recall per class: {recall}\n")
+            file.write(f"F1 Score per class: {f1_score}\n")
+
+        # Save the confusion matrix
+        np.save(confusion_matrix_file_path, hist)
+
+        # Also log the information
+        # Log or print the metrics as needed
+        logger.info(f"Mean IoU: {mean_IoU}")
+        logger.info(f"Pixel accuracy: {pixel_acc}")
+        logger.info(f"Mean precision: {mean_precision}")
+        logger.info(f"Mean recall: {mean_recall}")
+        logger.info(f"Mean F1 score: {mean_f1_score}")
+
         return result_line
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
