@@ -44,7 +44,7 @@ def split_dataset_and_create_structure(dataset_name, rgb_folder_path, gt_folder_
     
     # Copy files to their respective directories
     copy_files(all_items, rgb_folder_path, rgb_folder, '.png')  # Adjust if RGB format differs
-    copy_files(all_items, ndvi_folder_path, modal_x_folder, '.png')  # Adjust if NDVI format differs
+    copy_files(all_items, ndvi_folder_path, modal_x_folder, '.tif')  # Adjust if NDVI format differs
     copy_files(all_items, gt_folder_path, label_folder, '.png')  # Adjust if GT format differs
     
     # Write the train.txt, val.txt, and test.txt files
@@ -53,10 +53,40 @@ def split_dataset_and_create_structure(dataset_name, rgb_folder_path, gt_folder_
             for item in items:
                 f.write(f'{item}\n')
 
+import os
+
+def delete_selected_images(directory):
+    """
+    Deletes all images in the specified directory that end with '_flipped.tif' or '_rotated.tif'.
+
+    Args:
+    directory (str): The path to the directory where the files are located.
+    """
+    # Check if the directory exists
+    if not os.path.exists(directory):
+        print("Directory does not exist:", directory)
+        return
+
+    # List all files in the directory
+    files = os.listdir(directory)
+    
+    # Define suffixes to check for
+    suffixes = ('_flipped.tif', '_rotated.tif')
+
+    # Loop through files and delete those that end with the specified suffixes
+    for file in files:
+        if file.endswith(suffixes):
+            os.remove(os.path.join(directory, file))
+            print(f"Deleted: {file}")
+
+
 # Example usage
 rgb_folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/Tile_aerial_image_png' 
-gt_folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_merged_groundtruth_png_multiclass'
-ndvi_folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi_png'
-dataset_name = 'Dataset_2'
+# gt_folder_path_multi = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_merged_groundtruth_png_multiclass'
+gt_folder_path_binary = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/merged_ground_truths_binary_building_png"
+ndvi_folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi'
+# dem_folder_path = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_dem_png"
+dataset_name = 'Dataset_15_building_binary'
 
-split_dataset_and_create_structure(dataset_name, rgb_folder_path, gt_folder_path, ndvi_folder_path)
+split_dataset_and_create_structure(dataset_name, rgb_folder_path, gt_folder_path_binary, ndvi_folder_path)
+# delete_selected_images("/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi")

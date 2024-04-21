@@ -68,14 +68,16 @@ def get_class_colors_six():
     Returns a list of RGB colors for six classes in the dataset.
 
     Modify the colors as needed for your specific dataset.
+
+    "background", "road", "driveway", "parkingspot", "sport", "playground"
     """
     return [
-        (255, 0, 0),    # Class 0 color (e.g., Red)
-        (0, 255, 0),    # Class 1 color (e.g., Green)
-        (0, 0, 255),    # Class 2 color (e.g., Blue)
-        (255, 255, 0),  # Class 3 color (e.g., Yellow)
-        (255, 0, 255),  # Class 4 color (e.g., Magenta)
-        (0, 255, 255),  # Class 5 color (e.g., Cyan)
+        (255, 0, 0),    # Class 0 color (e.g., Red) background
+        (0, 255, 0),    # Class 1 color (e.g., Green) road
+        (0, 0, 255),    # Class 2 color (e.g., Blue) driveway
+        (255, 255, 0),  # Class 3 color (e.g., Yellow) parkingspot
+        (255, 0, 255),  # Class 4 color (e.g., Magenta) sport
+        (0, 255, 255),  # Class 5 color (e.g., Cyan) playground
         # Add more colors if you have more than six classes
     ]
 
@@ -102,7 +104,7 @@ def print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, class_names=None, show_n
         print(line)
     return line
 
-def print_metrics(iou, recall, f1_scores, precision, class_names=None, no_print=False):
+def print_metrics(iou, recall, f1_scores, precision, overall_accuracy, class_names=None, no_print=False):
     n = len(iou)  # Assuming iou, recall, f1_scores, and precision have the same length
     lines = []
     for i in range(n):
@@ -121,7 +123,7 @@ def print_metrics(iou, recall, f1_scores, precision, class_names=None, no_print=
     # Append mean values
     lines.append('----------')
     lines.append('Mean Values\tIoU: %.3f%%\tRecall: %.3f%%\tF1 Score: %.3f%%\tPrecision: %.3f%%' % (mean_iou * 100, mean_recall * 100, mean_f1 * 100, mean_precision * 100))
-
+    lines.append(f"Overall accuracy: {overall_accuracy}")
     # Join all lines into a single string
     line = "\n".join(lines)
     if not no_print:

@@ -3,6 +3,7 @@ from pickletools import uint8
 import cv2
 import torch
 import numpy as np
+from PIL import Image
 
 import torch.utils.data as data
 
@@ -20,6 +21,7 @@ class RGBXDataset(data.Dataset):
         self._x_format = setting['x_format']
         self._x_single_channel = setting['x_single_channel']
         self._train_source = setting['train_source']
+        self._val_source = setting["val_source"]
         self._eval_source = setting['eval_source']
         self.class_names = setting['class_names']
         self._file_names = self._get_file_names(split_name)
@@ -48,10 +50,9 @@ class RGBXDataset(data.Dataset):
             gt = self._gt_transform(gt) 
 
         if self._x_single_channel:
-            x = self._open_image(x_path, cv2.IMREAD_GRAYSCALE)
-            x = cv2.merge([x, x, x])
+            x = self._open_image_tif(x_path)
         else:
-            x =  self._open_image(x_path, cv2.COLOR_BGR2RGB)
+            x =  self._open_image_tif(x_path)
         
         if self.preprocess is not None:
             rgb, gt, x = self.preprocess(rgb, gt, x)
@@ -66,9 +67,11 @@ class RGBXDataset(data.Dataset):
         return output_dict
 
     def _get_file_names(self, split_name):
-        assert split_name in ['train', 'val']
+        assert split_name in ['train', 'val', "test"]
         source = self._train_source
         if split_name == "val":
+            source = self._val_source
+        if split_name == "test":
             source = self._eval_source
 
         file_names = []
@@ -100,7 +103,22 @@ class RGBXDataset(data.Dataset):
     def _open_image(filepath, mode=cv2.IMREAD_COLOR, dtype=None):
         img = np.array(cv2.imread(filepath, mode), dtype=dtype)
         return img
+    
+    @staticmethod
+    def _open_image_tif(filepath):
+        # Open the image using PIL
+        img = Image.open(filepath)
 
+        # Convert the image to a NumPy array without explicitly specifying dtype
+        img_array = np.array(img)
+
+        # Check if the image is single-channel (2D array) and replicate across three channels if necessary
+        if img_array.ndim == 2:  # Single channel
+            img_array = np.repeat(img_array[:, :, np.newaxis], 3, axis=2)
+
+        return img_array
+
+    
     @staticmethod
     def _gt_transform(gt):
         return gt - 1 

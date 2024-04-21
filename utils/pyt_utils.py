@@ -209,6 +209,8 @@ def parse_devices(input_devices):
                 devices.append(sd)
         else:
             device = int(d)
+            print(device)
+            print(torch.cuda.device_count())
             assert device < torch.cuda.device_count()
             devices.append(device)
 

@@ -53,6 +53,10 @@ class ValPre(object):
     def __call__(self, rgb, gt, modal_x):
         return rgb, gt, modal_x
 
+class TestPre(object):
+    def __call__(self, rgb, gt, modal_x):
+        return rgb, gt, modal_x
+
 def get_train_loader(engine, dataset):
     data_setting = {'rgb_root': config.rgb_root_folder,
                     'rgb_format': config.rgb_format,
@@ -64,6 +68,7 @@ def get_train_loader(engine, dataset):
                     'x_single_channel': config.x_is_single_channel,
                     'class_names': config.class_names,
                     'train_source': config.train_source,
+                    'val_source': config.val_source,
                     'eval_source': config.eval_source,
                     'class_names': config.class_names}
     train_preprocess = TrainPre(config.norm_mean, config.norm_std)
@@ -88,3 +93,45 @@ def get_train_loader(engine, dataset):
                                    sampler=train_sampler)
 
     return train_loader, train_sampler
+
+def get_val_loader(engine, dataset):
+    data_setting = {
+        'rgb_root': config.rgb_root_folder,
+        'rgb_format': config.rgb_format,
+        'gt_root': config.gt_root_folder,
+        'gt_format': config.gt_format,
+        'transform_gt': config.gt_transform,
+        'x_root': config.x_root_folder,
+        'x_format': config.x_format,
+        'x_single_channel': config.x_is_single_channel,
+        'class_names': config.class_names,
+        'train_source': config.train_source,
+        'val_source': config.val_source,
+        'eval_source': config.eval_source,
+        'class_names': config.class_names
+    }
+    
+    # Presuming you have a similar preprocessing function for validation
+    val_preprocess = ValPre()
+
+    # Change "train" to "val" or however you distinguish your validation dataset
+    val_dataset = dataset(data_setting, "val", val_preprocess, config.batch_size * config.niters_per_epoch)
+    
+    val_sampler = None
+    is_shuffle = False  # Typically, you don't shuffle the validation set
+    batch_size = config.batch_size
+
+    if engine.distributed:
+        # Even for validation, if you're using DistributedSampler, disable shuffling
+        val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset, shuffle=False)
+        batch_size = config.batch_size // engine.world_size
+
+    val_loader = data.DataLoader(val_dataset,
+                                 batch_size=batch_size,
+                                 num_workers=config.num_workers,
+                                 drop_last=False,  # Usually, we don't drop last batch in the validation set
+                                 shuffle=is_shuffle,
+                                 pin_memory=True,
+                                 sampler=val_sampler)  # Note: Use the val_sampler here if distributed
+
+    return val_loader, val_sampler

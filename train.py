@@ -14,9 +14,10 @@ import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel
 
 from config import config
-from dataloader.dataloader import get_train_loader
+from dataloader.dataloader import get_train_loader,get_val_loader
 from models.builder import EncoderDecoder as segmodel
 from dataloader.RGBXDataset import RGBXDataset
+from utils.discordCallback import post_to_discord
 from utils.init_func import init_weight, group_weight
 from utils.lr_policy import WarmUpPolyLR
 from engine.engine import Engine
@@ -29,6 +30,7 @@ from tensorboardX import SummaryWriter
 parser = argparse.ArgumentParser()
 logger = get_logger()
 
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1209069645685071872/HoOEDai_phExtY0rBdcnvQiIcYTEwS_XugDMBMbR9sgI2zs3fMHjRswARyCR5nUCl1cQ"
 os.environ['MASTER_PORT'] = '169710'
 
 with Engine(custom_parser=parser) as engine:
@@ -44,6 +46,7 @@ with Engine(custom_parser=parser) as engine:
 
     # data loader
     train_loader, train_sampler = get_train_loader(engine, RGBXDataset)
+    val_loader, val_sampler = get_val_loader(engine, RGBXDataset)
     print(config.dataset_path)
     if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
         tb_dir = config.tb_dir + '/{}'.format(time.strftime("%b%d_%d-%H-%M", time.localtime()))
@@ -127,18 +130,7 @@ with Engine(custom_parser=parser) as engine:
             imgs = imgs.cuda(non_blocking=True)
             gts = gts.cuda(non_blocking=True)
             modal_xs = modal_xs.cuda(non_blocking=True)
-            
-            # print("Unique labels in gts:", gts.unique())
-            # n_class = 2
 
-            # valid_labels = (gts >= 0) & (gts < n_class)
-            # if not valid_labels.all():
-            #     invalid_labels = gts[~valid_labels]
-            #     print(f"Invalid labels found: {invalid_labels.unique()}")
-            #     raise ValueError("Labels outside of expected range detected.")
-
-            # Assuming CrossEntropyLoss is used and 255 should be ignored
-            # criterion = nn.CrossEntropyLoss(ignore_index=255)
 
             aux_rate = 0.2
             loss = model(imgs, modal_xs, gts)
@@ -153,36 +145,6 @@ with Engine(custom_parser=parser) as engine:
 
             current_idx = (epoch- 1) * config.niters_per_epoch + idx 
             lr = lr_policy.get_lr(current_idx)
-
-            # with torch.no_grad():
-            #     preds = torch.argmax(model(imgs, modal_xs), dim=1)  # Convert logits to predictions
-
-            # Store predictions and ground truths
-            # all_preds.append(preds.cpu().numpy())
-            # all_gts.append(gts.cpu().numpy())
-
-            # Assuming all_gts and all_preds are lists of arrays or lists, you first concatenate them into a single array
-            # all_gts_array = np.concatenate([np.array(gt) for gt in all_gts])
-            # all_preds_array = np.concatenate([np.array(pred) for pred in all_preds])
-
-            # Now you can flatten them
-            # all_gts_flat = all_gts_array.flatten()
-            # all_preds_flat = all_preds_array.flatten()
-
-            # Calculate IoU and store
-            # iou = calculate_iou(preds.cpu(), gts.cpu(), n_classes=config.num_classes)  # Adjust n_classes as per your dataset
-            # ious = calculate_iou_per_class(preds.cpu(), gts.cpu(), n_classes=config.num_classes)
-
-            # Compute metrics precision, recall and f1 score
-            # precision = precision_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
-            # recall = recall_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
-            # f1 = f1_score(all_gts_flat, all_preds_flat, average='macro', labels=np.unique(all_gts))
-
-            
-            # iou_scores.append(iou)
-
-            # for i in range(len(optimizer.param_groups)):
-                # optimizer.param_groups[i]['lr'] = lr
 
             if engine.distributed:
                 sum_loss += reduce_loss.item()
@@ -200,27 +162,52 @@ with Engine(custom_parser=parser) as engine:
             del loss
             pbar.set_description(print_str, refresh=False)
 
-        # avg_iou = np.mean([iou for iou in iou_scores if not np.isnan(iou)])
-        # avg_iou_per_class = [np.nanmean(cls_scores) if cls_scores else np.nan for cls_scores in iou_scores_per_class]
-
-        # Define the file path for storing the metrics
-        # metrics_file_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results_metrix_output/avg_iou_per_class.txt'
-
-        # Ensure the directory exists
-        # os.makedirs(os.path.dirname(metrics_file_path), exist_ok=True)
-
-        # Append avg_iou_per_class to the file with epoch information
-        # with open(metrics_file_path, 'a') as file:  # Open in append mode
-        #     file.write(f"Epoch: {epoch}\n")
-        #     for class_index, iou in enumerate(avg_iou_per_class):
-        #         file.write(f"Class {class_index}: {iou}\n")
 
         if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
             tb.add_scalar('train_loss', sum_loss / len(pbar), epoch)
-            # tb.add_scalar('train_iou', avg_iou, epoch)
-            # # Loop through each class's IoU and log it separately
-            # for cls_index, cls_iou in enumerate(avg_iou_per_class):
-            #     tb.add_scalar(f'train_iou_class_{cls_index}', cls_iou, epoch)
+            message = f'Epoch {epoch}/{config.nepochs} training complete. Loss: {sum_loss / len(pbar)}'
+            # post_to_discord(DISCORD_WEBHOOK_URL, message)
+
+
+        # After training loop, we perform the validation
+        model.eval()
+        total_val_loss = 0
+        all_val_preds = []
+        all_val_gts = []
+
+        with torch.no_grad():
+            for minibatch in val_loader:
+                imgs = minibatch['data'].numpy()  # Assuming data comes in CPU numpy format
+                modal_xs = minibatch['modal_x'].numpy()
+                gts = minibatch['label'].cuda()  # Assuming labels are used for computing loss on GPU
+
+                preds, refined_preds = [], []
+                for img, modal_x in zip(imgs, modal_xs):
+                    pred, _ = sliding_eval_rgbX(img, modal_x, config.eval_crop_size, config.eval_stride_rate, device='cuda')
+                    preds.append(pred)
+
+                preds = np.stack(preds)  # Stack predictions into a numpy array
+                preds_tensor = torch.from_numpy(preds).cuda()
+                refined_preds_tensor = torch.from_numpy(refined_preds).cuda()
+
+        # Compute loss here if applicable
+        # loss = criterion(refined_preds_tensor, gts)  # Example loss computation
+        # total_val_loss += loss.item()
+
+        # Store predictions and ground truths for metrics computation
+        all_val_preds.extend(preds)
+        all_val_gts.extend(minibatch['label'].numpy())
+
+        avg_val_loss = val_loss / len(val_loader)
+        val_precision = precision_score(all_val_gts, all_val_preds, average='macro')
+        val_recall = recall_score(all_val_gts, all_val_preds, average='macro')
+        val_f1 = f1_score(all_val_gts, all_val_preds, average='macro')
+
+        # Log validation metrics
+        tb.add_scalar('val_loss', avg_val_loss, epoch)
+        tb.add_scalar('val_precision', val_precision, epoch)
+        tb.add_scalar('val_recall', val_recall, epoch)
+        tb.add_scalar('val_f1', val_f1, epoch)
 
         if (epoch >= config.checkpoint_start_epoch) and (epoch % config.checkpoint_step == 0) or (epoch == config.nepochs):
             if engine.distributed and (engine.local_rank == 0):

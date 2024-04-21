@@ -57,6 +57,7 @@ class EncoderDecoder(nn.Module):
         if cfg.decoder == 'MLPDecoder':
             logger.info('Using MLP Decoder')
             from .decoders.MLPDecoder import DecoderHead
+            print(self.channels)
             self.decode_head = DecoderHead(in_channels=self.channels, num_classes=cfg.num_classes, norm_layer=norm_layer, embed_dim=cfg.decoder_embed_dim)
         
         elif cfg.decoder == 'UPernet':
@@ -76,6 +77,12 @@ class EncoderDecoder(nn.Module):
             self.aux_index = 2
             self.aux_rate = 0.4
             self.aux_head = FCNHead(self.channels[2], cfg.num_classes, norm_layer=norm_layer)
+
+        elif cfg.decoder == 'PSPNet':
+            logger.info('Using PSPNet Decoder')
+            from .decoders.PSPNet import PSPDecoder
+            print(self.channels)
+            self.decode_head = PSPDecoder(in_channels=self.channels, num_classes=cfg.num_classes, norm_layer=self.norm_layer)
 
         else:
             logger.info('No decoder(FCN-32s)')

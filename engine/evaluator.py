@@ -9,6 +9,7 @@ import torch
 import multiprocessing as mp
 
 from engine.logger import get_logger
+from utils.crf import apply_crf
 from utils.pyt_utils import load_model, link_file, ensure_dir
 from utils.transforms import pad_image_to_shape, normalize
 
@@ -32,6 +33,7 @@ class Evaluator(object):
         self.context = mp.get_context('spawn')
         self.val_func = None
         self.results_queue = self.context.Queue(self.ndata)
+        self.results_queue_refined = self.context.Queue(self.ndata)
 
         self.verbose = verbose
         self.save_path = save_path
@@ -81,17 +83,21 @@ class Evaluator(object):
 
         results = open(log_file, 'a')
         link_file(log_file, log_file_link)
-
+        print(log_file)
         for model in models:
             logger.info("Load Model: %s" % model)
             self.val_func = load_model(self.network, model)
             if len(self.devices ) == 1:
-                result_line = self.single_process_evalutation()
+                result_line, result_line_refined = self.single_process_evalutation()
             else:
-                result_line = self.multi_process_evaluation()
+                result_line, result_line_refined = self.multi_process_evaluation()
 
             results.write('Model: ' + model + '\n')
+            results.write("Normal results: \n")
             results.write(result_line)
+            results.write('\n')
+            results.write("Refined Results CRF: \n")
+            results.write(result_line_refined)
             results.write('\n')
             results.flush()
 
@@ -103,15 +109,19 @@ class Evaluator(object):
 
         logger.info('GPU %s handle %d data.' % (self.devices[0], self.ndata))
         all_results = []
+        all_results_refined = []
         for idx in tqdm(range(self.ndata)):
             dd = self.dataset[idx]
-            results_dict = self.func_per_iteration(dd,self.devices[0])
+            results_dict, result_dict_refined = self.func_per_iteration(dd,self.devices[0])
             all_results.append(results_dict)
+            all_results_refined.append(result_dict_refined)
+        print("Final output")
         result_line = self.compute_metric(all_results)
+        result_line_refined = self.compute_metric(all_results_refined)
         logger.info(
             'Evaluation Elapsed Time: %.2fs' % (
                     time.perf_counter() - start_eval_time))
-        return result_line
+        return result_line,result_line_refined
 
 
     def multi_process_evaluation(self):
@@ -137,20 +147,25 @@ class Evaluator(object):
             p.start()
 
         all_results = []
+        all_results_refined = []
         for _ in tqdm(range(self.ndata)):
             t = self.results_queue.get()
+            t2 = self.results_queue_refined.get()
             all_results.append(t)
+            all_results_refined.append(t2)
             if self.verbose:
                 self.compute_metric(all_results)
+                self.compute_metric(all_results_refined)
 
         for p in procs:
             p.join()
-
+        
         result_line = self.compute_metric(all_results)
+        result_line_refined = self.compute_metric(all_results_refined)
         logger.info(
             'Evaluation Elapsed Time: %.2fs' % (
                     time.perf_counter() - start_eval_time))
-        return result_line
+        return result_line, result_line_refined
 
     def worker(self, shred_list, device):
         start_load_time = time.time()
@@ -159,8 +174,9 @@ class Evaluator(object):
 
         for idx in shred_list:
             dd = self.dataset[idx]
-            results_dict = self.func_per_iteration(dd, device)
+            results_dict, results_dict_refined = self.func_per_iteration(dd, device)
             self.results_queue.put(results_dict)
+            self.results_queue_refined.put(results_dict_refined)
 
     def func_per_iteration(self, data, device):
         raise NotImplementedError
@@ -301,7 +317,30 @@ class Evaluator(object):
 
         return p_img
 
-    
+    def sliding_eval_rgbX_invert(self, img, modal_x, crop_size, stride_rate, device=None):
+        crop_size = to_2tuple(crop_size)
+        ori_rows, ori_cols, _ = img.shape
+        processed_pred = np.zeros((ori_rows, ori_cols, self.class_num))
+
+        for s in self.multi_scales:
+            img_scale = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+            if len(modal_x.shape) == 2:
+                modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_NEAREST)
+            else:
+                modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+
+            new_rows, new_cols, _ = img_scale.shape
+            processed_pred += self.scale_process_rgbX(img_scale, modal_x_scale, (ori_rows, ori_cols),
+                                                        crop_size, stride_rate, device)
+        # Invert predictions here: assuming 0 is impervious and 1 is pervious
+        pred = processed_pred.argmax(2)  # Get initial prediction (binary case)
+        pred = 1 - pred  # Invert the predictions
+
+        # Optionally apply CRF for smoothing the prediction map
+        refined_pred = apply_crf(img, pred)
+
+        return pred, refined_pred
+        
     # add new funtion for rgb and modal X segmentation
     def sliding_eval_rgbX(self, img, modal_x, crop_size, stride_rate, device=None):
         crop_size = to_2tuple(crop_size)
@@ -318,10 +357,12 @@ class Evaluator(object):
             new_rows, new_cols, _ = img_scale.shape
             processed_pred += self.scale_process_rgbX(img_scale, modal_x_scale, (ori_rows, ori_cols),
                                                         crop_size, stride_rate, device)
-
+        # print(processed_pred)
         pred = processed_pred.argmax(2)
-
-        return pred
+        # print(pred)
+        refined_pred = apply_crf(img, processed_pred)
+        
+        return pred, refined_pred
 
     def scale_process_rgbX(self, img, modal_x, ori_shape, crop_size, stride_rate, device=None):
         new_rows, new_cols, c = img.shape
@@ -391,7 +432,6 @@ class Evaluator(object):
                     score_flip = score_flip[0]
                     score += score_flip.flip(-1)
                 score = torch.exp(score)
-        
         return score
 
     # for rgbd segmentation
