@@ -20,6 +20,8 @@ def hist_info(n_cl, pred, gt):
                                   minlength=n_cl ** 2).reshape(n_cl, n_cl)
     return confusionMatrix, labeled, correct
 
+import numpy as np
+
 def compute_score(hist, correct, labeled):
     # Existing IoU calculations remain unchanged
     iou = np.diag(hist) / (hist.sum(1) + hist.sum(0) - np.diag(hist))
@@ -41,6 +43,11 @@ def compute_score(hist, correct, labeled):
     mean_recall = np.nanmean(recall)
     mean_f1_score = np.nanmean(f1_score)
 
+    # Compute Overestimation Rate for each class
+    false_positives = hist.sum(axis=0) - np.diag(hist)
+    overestimation_rate = false_positives / (hist.sum(axis=0) + np.finfo(np.float32).eps)
+    mean_overestimation_rate = np.nanmean(overestimation_rate)
+
     overall_accuracy = np.diag(hist).sum() / hist.sum()
 
-    return iou, mean_IoU, mean_IoU_no_back, freq_IoU, mean_pixel_acc, pixel_acc, precision, recall, f1_score, mean_precision, mean_recall, mean_f1_score,overall_accuracy
+    return iou, mean_IoU, mean_IoU_no_back, freq_IoU, mean_pixel_acc, pixel_acc, precision, recall, f1_score, mean_precision, mean_recall, mean_f1_score, overall_accuracy, overestimation_rate, mean_overestimation_rate

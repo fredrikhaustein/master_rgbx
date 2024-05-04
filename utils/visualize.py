@@ -104,7 +104,7 @@ def print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, class_names=None, show_n
         print(line)
     return line
 
-def print_metrics(iou, recall, f1_scores, precision, overall_accuracy, class_names=None, no_print=False):
+def print_metrics(iou, recall, f1_scores, precision, overall_accuracy,freq_IoU, overestimation, class_names=None, no_print=False):
     n = len(iou)  # Assuming iou, recall, f1_scores, and precision have the same length
     lines = []
     for i in range(n):
@@ -124,6 +124,8 @@ def print_metrics(iou, recall, f1_scores, precision, overall_accuracy, class_nam
     lines.append('----------')
     lines.append('Mean Values\tIoU: %.3f%%\tRecall: %.3f%%\tF1 Score: %.3f%%\tPrecision: %.3f%%' % (mean_iou * 100, mean_recall * 100, mean_f1 * 100, mean_precision * 100))
     lines.append(f"Overall accuracy: {overall_accuracy}")
+    lines.append(f"Frequency weighted IoU: {freq_IoU}")
+    lines.append(f"Overestimation: {overestimation}")
     # Join all lines into a single string
     line = "\n".join(lines)
     if not no_print:
