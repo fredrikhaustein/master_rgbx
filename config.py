@@ -29,8 +29,8 @@ C.abs_dir = osp.realpath(".")
 
 # Dataset config
 """Dataset Path"""
-C.dataset_name = 'Dataset_14_vegetation_ground_truth_binary'
-C.dataset_path = osp.join(C.root_dir, 'datasets', 'Dataset_14_vegetation_ground_truth_binary')
+C.dataset_name = 'Dataset_21_fkb_manual_labeling_direct_infrared'
+C.dataset_path = osp.join(C.root_dir, 'datasets', 'Dataset_21_fkb_manual_labeling_direct_infrared')
 C.rgb_root_folder = osp.join(C.dataset_path, 'RGBFolder')
 C.rgb_format = '.png'
 C.gt_root_folder = osp.join(C.dataset_path, 'LabelFolder')
@@ -40,7 +40,7 @@ C.gt_transform = False
 # True for most dataset valid, Faslse for MFNet(?)
 C.x_root_folder = osp.join(C.dataset_path, 'ModalXFolder')
 C.x_format = '.tif'
-C.x_is_single_channel = True # True for raw depth, thermal and aolp/dolp(not aolp/dolp tri) input
+C.x_is_single_channel = True 
 C.train_source = osp.join(C.dataset_path, "train.txt")
 C.val_source = osp.join(C.dataset_path, "val.txt")
 C.eval_source = osp.join(C.dataset_path, "test.txt")
@@ -48,7 +48,7 @@ C.is_test = False
 C.num_train_imgs = 1857
 C.num_eval_imgs = 233
 C.num_classes = 2
-C.class_names =  [ "impervious", "pervious"]
+C.class_names =  [ "pervious", "impervious"]
 
 """Image Config"""
 C.background = 255
@@ -58,9 +58,9 @@ C.norm_mean = np.array([0.485, 0.456, 0.406])
 C.norm_std = np.array([0.229, 0.224, 0.225])
 
 """ Settings for network, this would be different for each kind of model"""
-C.backbone = 'mit_b0' # Remember change the path below.
+C.backbone = 'mit_b0' 
 C.pretrained_model = C.root_dir + '/pretrained/segformer/mit_b0.pth'
-C.decoder = 'deeplabv3+'
+C.decoder = 'MLPDecoder' 
 C.decoder_embed_dim = 512
 C.optimizer = 'AdamW'
 
@@ -97,7 +97,7 @@ def add_path(path):
         sys.path.insert(0, path)
 add_path(osp.join(C.root_dir))
 
-C.log_dir = osp.abspath('log_' + C.dataset_name + '_' + C.backbone + " _indirect_method_deeplab")
+C.log_dir = osp.abspath('log_' + C.dataset_name + '_' + C.backbone + "direct_ndvi_01_infrared_data")
 C.tb_dir = osp.abspath(osp.join(C.log_dir, "tb"))
 C.log_dir_link = C.log_dir
 C.checkpoint_dir = osp.abspath(osp.join(C.log_dir, "checkpoint"))

@@ -318,6 +318,31 @@ class Evaluator(object):
         return p_img
 
     def sliding_eval_rgbX_invert(self, img, modal_x, crop_size, stride_rate, device=None):
+            crop_size = to_2tuple(crop_size)
+            ori_rows, ori_cols, _ = img.shape
+            processed_pred = np.zeros((ori_rows, ori_cols, self.class_num))
+
+            for s in self.multi_scales:
+                img_scale = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+                if len(modal_x.shape) == 2:
+                    modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_NEAREST)
+                else:
+                    modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+
+                new_rows, new_cols, _ = img_scale.shape
+                processed_pred += self.scale_process_rgbX(img_scale, modal_x_scale, (ori_rows, ori_cols),
+                                                            crop_size, stride_rate, device)
+            # Invert predictions here: assuming 0 is impervious and 1 is pervious
+            pred = processed_pred.argmax(2)  # Get initial prediction (binary case)
+            print(np.unique(pred))
+            pred = 1 - pred  # Invert the predictions
+
+            # Optionally apply CRF for smoothing the prediction map
+            # refined_pred = apply_crf(img, pred)
+
+            return pred, pred
+    
+    def sliding_eval_rgbX_invert_with_threshold(self, img, modal_x, crop_size, stride_rate, device=None, threshold=0.5):
         crop_size = to_2tuple(crop_size)
         ori_rows, ori_cols, _ = img.shape
         processed_pred = np.zeros((ori_rows, ori_cols, self.class_num))
@@ -331,16 +356,44 @@ class Evaluator(object):
 
             new_rows, new_cols, _ = img_scale.shape
             processed_pred += self.scale_process_rgbX(img_scale, modal_x_scale, (ori_rows, ori_cols),
-                                                        crop_size, stride_rate, device)
-        # Invert predictions here: assuming 0 is impervious and 1 is pervious
-        pred = processed_pred.argmax(2)  # Get initial prediction (binary case)
-        pred = 1 - pred  # Invert the predictions
+                                                    crop_size, stride_rate, device)
+        
+        # Normalize to get class probabilities
+        class_probabilities = processed_pred / processed_pred.sum(axis=2, keepdims=True)
+        
+        # Apply the threshold to determine class predictions and invert them
+        pred = (class_probabilities[..., 1] <= threshold).astype(np.uint8)  # Class 1 probability thresholding and inverting
 
         # Optionally apply CRF for smoothing the prediction map
-        refined_pred = apply_crf(img, pred)
+        # refined_pred = apply_crf(img, pred)
 
-        return pred, refined_pred
+        return pred, pred
+
+    def sliding_eval_rgbX_with_threshold(self, img, modal_x, crop_size, stride_rate, device=None, threshold=0.5):
+        crop_size = to_2tuple(crop_size)
+        ori_rows, ori_cols, _ = img.shape
+        processed_pred = np.zeros((ori_rows, ori_cols, self.class_num))
+
+        for s in self.multi_scales:
+            img_scale = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+            if len(modal_x.shape) == 2:
+                modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_NEAREST)
+            else:
+                modal_x_scale = cv2.resize(modal_x, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+
+            new_rows, new_cols, _ = img_scale.shape
+            processed_pred += self.scale_process_rgbX(img_scale, modal_x_scale, (ori_rows, ori_cols),
+                                                    crop_size, stride_rate, device)
         
+        # Apply the threshold to determine class predictions
+        class_probabilities = processed_pred / processed_pred.sum(axis=2, keepdims=True)  # Normalize to get probabilities
+        pred = (class_probabilities[..., 1] > threshold).astype(np.uint8)  # Class 1 probability thresholding
+        
+        # Optionally apply CRF for smoothing the prediction map
+        # refined_pred = apply_crf(img, pred)
+
+        return pred, pred
+
     # add new funtion for rgb and modal X segmentation
     def sliding_eval_rgbX(self, img, modal_x, crop_size, stride_rate, device=None):
         crop_size = to_2tuple(crop_size)

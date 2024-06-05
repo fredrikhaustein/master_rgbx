@@ -32,7 +32,17 @@ def convert_binary_png_and_save(input_path, output_path):
     print(f'Modified image saved successfully to {output_path}')
 
 # Example usage
-input_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_14_vegetation_ground_truth_binary/LabelFolder/07_35.png'  # Path to the input PNG file
-output_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_master_images/07_35_labe_vegitation.png'  # Path where the modified PNG file will be saved
+input_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_20_fkb_vegitation_ndvi_01_indirect/LabelFolder/07_35.png'  # Path to the input PNG file
+output_path = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_master_images/07_35_ndvi_01.png'  # Path where the modified PNG file will be saved
 
+folder1 = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/fkb_manually_labling_ground_truth_png/29_21.png"
+folder1Output = "/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_master_images/05_12_manually.png"
+folder2 = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/fkb_ground_truth_png/29_21.png"
+folder2Output = "/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_master_images/05_12_fkb.png"
+
+
+# convert_binary_png_and_save(input_path, output_path)  # Convert and save the image
 convert_binary_png_and_save(input_path, output_path)  # Convert and save the image
+# convert_binary_png_and_save(folder2, folder2Output)  # Convert and save the image
+
+

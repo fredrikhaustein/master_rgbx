@@ -24,7 +24,7 @@ def save_raster(output_path, data, kwargs):
     with rasterio.open(output_path, 'w', **kwargs) as dst:
         dst.write(data)
 
-def should_augment(img_array, class_threshold=0.3, target_class=1):
+def should_augment(img_array, class_threshold=0.4, target_class=1):
     """Checks if the target class occupies more than the specified threshold."""
     total_pixels = img_array.size
     target_pixels = np.sum(img_array == target_class)
@@ -33,7 +33,7 @@ def should_augment(img_array, class_threshold=0.3, target_class=1):
 
 def process_and_augment_images(folder_ground_truth, folder_aerial, folder_ndvi,
                                output_folder_gt, output_folder_aerial, output_folder_ndvi,
-                               class_threshold=0.3, target_class=1):
+                               class_threshold=0.4, target_class=1):
     """Process and augment images based on the class threshold."""
     for path in [output_folder_gt, output_folder_aerial, output_folder_ndvi]:
         os.makedirs(path, exist_ok=True)
@@ -69,13 +69,13 @@ def process_and_augment_images(folder_ground_truth, folder_aerial, folder_ndvi,
 
 
 # Update these paths to your directories
-folder_ground_truth = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/merged_ground_truths_binary_building_png'
+folder_ground_truth = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/vegetation_ground_truth_NDVI_png'
 folder_aerial = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/Tile_aerial_image_png'
 folder_ndvi = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi'
 
-output_folder_ground_truth = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/merged_ground_truths_binary_building_png_augmented'
-output_folder_aerial = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/Tile_aerial_image_png_augmented'
-output_folder_ndvi = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi_augmented'
+output_folder_ground_truth = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/fkb_manually_labling_ground_truth_png_augmented_indirect'
+output_folder_aerial = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/Tile_aerial_image_png_augmented_indirect'
+output_folder_ndvi = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/tiles_infraRed_shadow_ndvi_augmented_indirect'
 
 process_and_augment_images(folder_ground_truth, folder_aerial, folder_ndvi,
                            output_folder_ground_truth, output_folder_aerial, output_folder_ndvi)

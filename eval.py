@@ -27,12 +27,10 @@ class SegEvaluator(Evaluator):
         label = data['label']
         modal_x = data['modal_x']
         name = data['fn']
-        pred, refined_pred = self.sliding_eval_rgbX_invert(img, modal_x, config.eval_crop_size, config.eval_stride_rate, device)
+        pred, refined_pred = self.sliding_eval_rgbX(img, modal_x, config.eval_crop_size, config.eval_stride_rate, device)
+
         
         # visualize_and_save_predictions(img, pred, refined_pred, '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/crf_results', get_class_colors_six())
-
-        print(pred.shape)
-        print(label.shape)
 
         hist_tmp, labeled_tmp, correct_tmp = hist_info(config.num_classes, pred, label)
         results_dict = {'hist': hist_tmp, 'labeled': labeled_tmp, 'correct': correct_tmp}
@@ -97,33 +95,34 @@ class SegEvaluator(Evaluator):
 
         # print(count)
         # Compute overall IoU, mean IoU, etc.
-        iou, mean_IoU, mean_IoU_no_back, freq_IoU, mean_pixel_acc, pixel_acc, precision, recall, f1_score, mean_precision, mean_recall, mean_f1_score, overall_accuracy = compute_score(hist, correct, labeled)
+        iou, mean_IoU, mean_IoU_no_back, freq_IoU, mean_pixel_acc, pixel_acc, precision, recall, f1_score, mean_precision, mean_recall, mean_f1_score, overall_accuracy,overestimation_rate, mean_overestimation_rate = compute_score(hist, correct, labeled)
         # result_line = print_iou(iou, freq_IoU, mean_pixel_acc, pixel_acc, dataset.class_names, show_no_back=False)
-        result_line = print_metrics(iou, recall, f1_score, precision, overall_accuracy,class_names=config.class_names, no_print=False)
+        result_line = print_metrics(iou, recall, f1_score, precision, overall_accuracy,freq_IoU,overestimation_rate,class_names=config.class_names, no_print=False)
 
         # Define the directory and file paths
         directory_path = 'results_metric_output'
         os.makedirs(directory_path, exist_ok=True)  # Ensure the directory exists
-        metrics_file_path = os.path.join(directory_path, 'evaluation_vegetation_binary.txt')
-        confusion_matrix_file_path = os.path.join(directory_path, 'confusion_vegetation_binary.npy')
+        # metrics_file_path = os.path.join(directory_path, 'evaluation_vegetation_binary.txt')
+        # confusion_matrix_file_path = os.path.join(directory_path, 'confusion_vegetation_binary.npy')
 
-        # Write metrics to file
-        with open(metrics_file_path, 'w') as file:
-            file.write(f"IoU per class: {iou}\n")
-            file.write(f"Pixel accuracy: {pixel_acc}\n")
-            file.write(f"Precision per class: {precision}\n")
-            file.write(f"Recall per class: {recall}\n")
-            file.write(f"F1 Score per class: {f1_score}\n")
-            file.write(f"Mean IoU per class: {mean_IoU}\n")
-            file.write(f"Pixel accuracy: {mean_pixel_acc}\n")
-            file.write(f"Mean Precision per class: {mean_precision}\n")
-            file.write(f"Mean Recall per class: {mean_recall}\n")
-            file.write(f"Mean F1 Score per class: {mean_f1_score}\n")
-            file.write(f"Mean IoU Impervious surfaces: {mean_IoU_no_back}\n")
-            file.write(f"Frequency weighted IoU: {freq_IoU}\n")
-            file.write(f"Overall accuracy: {overall_accuracy}\n")
-        # Save the confusion matrix
-        np.save(confusion_matrix_file_path, hist)
+        # # Write metrics to file
+        # with open(metrics_file_path, 'w') as file:
+        #     file.write(f"IoU per class: {iou}\n")
+        #     file.write(f"Pixel accuracy: {pixel_acc}\n")
+        #     file.write(f"Precision per class: {precision}\n")
+        #     file.write(f"Recall per class: {recall}\n")
+        #     file.write(f"F1 Score per class: {f1_score}\n")
+        #     file.write(f"Mean IoU per class: {mean_IoU}\n")
+        #     file.write(f"Pixel accuracy: {mean_pixel_acc}\n")
+        #     file.write(f"Mean Precision per class: {mean_precision}\n")
+        #     file.write(f"Mean Recall per class: {mean_recall}\n")
+        #     file.write(f"Mean F1 Score per class: {mean_f1_score}\n")
+        #     file.write(f"Mean IoU Impervious surfaces: {mean_IoU_no_back}\n")
+        #     file.write(f"Frequency weighted IoU: {freq_IoU}\n")
+        #     file.write(f"Overall accuracy: {overall_accuracy}\n")
+        #     file.write(f"Overestimation rate: {overestimation_rate}\n")
+        # # Save the confusion matrix
+        # np.save(confusion_matrix_file_path, hist)
 
         # Also log the information
         # Log or print the metrics as needed

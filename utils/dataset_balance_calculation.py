@@ -30,5 +30,7 @@ def count_classes_in_images(folder_path):
     return total_counts
 
 # Path to the folder containing the PNG files
-folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/merged_ground_truths_binary_building_png_augmented'
-count_classes_in_images(folder_path)
+folder_path = '/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/fkb_ground_truth_png'
+folder_path2 = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/fkb_manually_labling_ground_truth_png"
+folder_path3 = "/cluster/home/fredhaus/imperviousSurfaces/DatasetMaster/vegetation_ground_truth_ndvi_01_png"
+count_classes_in_images(folder_path3)

@@ -1,25 +1,19 @@
 import os
-from pickletools import uint8
 import cv2
 import torch
 import numpy as np
 from PIL import Image
-
 import torch.utils.data as data
 
-
-class RGBXDataset(data.Dataset):
+class RGBDataset(data.Dataset):
     def __init__(self, setting, split_name, preprocess=None, file_length=None):
-        super(RGBXDataset, self).__init__()
+        super(RGBDataset, self).__init__()
         self._split_name = split_name
         self._rgb_path = setting['rgb_root']
         self._rgb_format = setting['rgb_format']
         self._gt_path = setting['gt_root']
         self._gt_format = setting['gt_format']
         self._transform_gt = setting['transform_gt']
-        self._x_path = setting['x_root']
-        self._x_format = setting['x_format']
-        self._x_single_channel = setting['x_single_channel']
         self._train_source = setting['train_source']
         self._val_source = setting["val_source"]
         self._eval_source = setting['eval_source']
@@ -39,30 +33,21 @@ class RGBXDataset(data.Dataset):
         else:
             item_name = self._file_names[index]
         rgb_path = os.path.join(self._rgb_path, item_name + self._rgb_format)
-        x_path = os.path.join(self._x_path, item_name + self._x_format)
         gt_path = os.path.join(self._gt_path, item_name + self._gt_format)
 
-        # Check the following settings if necessary
         rgb = self._open_image(rgb_path, cv2.COLOR_BGR2RGB)
-
         gt = self._open_image(gt_path, cv2.IMREAD_GRAYSCALE, dtype=np.uint8)
         if self._transform_gt:
-            gt = self._gt_transform(gt) 
+            gt = self._gt_transform(gt)
 
-        if self._x_single_channel:
-            x = self._open_image_tif(x_path)
-        else:
-            x =  self._open_image_tif(x_path)
-        
         if self.preprocess is not None:
-            rgb, gt, x = self.preprocess(rgb, gt, x)
+            rgb, gt = self.preprocess(rgb, gt)
 
         if self._split_name == 'train':
             rgb = torch.from_numpy(np.ascontiguousarray(rgb)).float()
             gt = torch.from_numpy(np.ascontiguousarray(gt)).long()
-            x = torch.from_numpy(np.ascontiguousarray(x)).float()
 
-        output_dict = dict(data=rgb, label=gt, modal_x=x, fn=str(item_name), n=len(self._file_names))
+        output_dict = dict(data=rgb, label=gt, fn=str(item_name), n=len(self._file_names))
 
         return output_dict
 
@@ -86,8 +71,8 @@ class RGBXDataset(data.Dataset):
 
     def _construct_new_file_names(self, length):
         assert isinstance(length, int)
-        files_len = len(self._file_names)                          
-        new_file_names = self._file_names * (length // files_len)   
+        files_len = len(self._file_names)
+        new_file_names = self._file_names * (length // files_len)
 
         rand_indices = torch.randperm(files_len).tolist()
         new_indices = rand_indices[:length % files_len]
@@ -96,31 +81,11 @@ class RGBXDataset(data.Dataset):
 
         return new_file_names
 
-    def get_length(self):
-        return self.__len__()
-
     @staticmethod
     def _open_image(filepath, mode=cv2.IMREAD_COLOR, dtype=None):
         img = np.array(cv2.imread(filepath, mode), dtype=dtype)
         return img
-    
-    @staticmethod
-    def _open_image_tif(filepath):
-        # Open the image using PIL
-        img = Image.open(filepath)
 
-        # Convert the image to a NumPy array without explicitly specifying dtype
-        img_array = np.array(img)
-
-        # Check if the image is single-channel (2D array) and replicate across three channels if necessary
-        if img_array.ndim == 2:  # Single channel
-            img_array = np.repeat(img_array[:, :, np.newaxis], 3, axis=2)
-
-        # print(img_array)
-
-        return img_array
-
-    
     @staticmethod
     def _gt_transform(gt):
         return gt - 1 
@@ -128,7 +93,6 @@ class RGBXDataset(data.Dataset):
     @classmethod
     def get_class_colors(*args):
         def uint82bin(n, count=8):
-            """returns the binary of integer n, count refers to amount of bits"""
             return ''.join([str((n >> y) & 1) for y in range(count - 1, -1, -1)])
 
         N = 41
@@ -145,5 +109,4 @@ class RGBXDataset(data.Dataset):
             cmap[i, 0] = r
             cmap[i, 1] = g
             cmap[i, 2] = b
-        class_colors = cmap.tolist()
-        return class_colors
+        return cmap.tolist()

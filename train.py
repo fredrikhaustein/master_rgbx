@@ -6,7 +6,7 @@ import argparse
 from tqdm import tqdm
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score
-
+# from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch.nn as nn
 import torch.distributed as dist
@@ -14,18 +14,20 @@ import torch.backends.cudnn as cudnn
 from torch.nn.parallel import DistributedDataParallel
 
 from config import config
-from dataloader.dataloader import get_train_loader,get_val_loader
+from dataloader.dataloader import get_train_loader, get_val_loader
 from models.builder import EncoderDecoder as segmodel
 from dataloader.RGBXDataset import RGBXDataset
+from engine.validation_evaluator import sliding_val_rgbX
 from utils.discordCallback import post_to_discord
 from utils.init_func import init_weight, group_weight
 from utils.lr_policy import WarmUpPolyLR
 from engine.engine import Engine
 from engine.logger import get_logger
-from utils.pyt_utils import all_reduce_tensor
-from utils.calculate_matrix import calculate_iou,calculate_iou_per_class
+from utils.pyt_utils import all_reduce_tensor, load_model
+from utils.calculate_matrix import calculate_iou, calculate_iou_per_class
 
 from tensorboardX import SummaryWriter
+# from torchviz import make_dot
 
 parser = argparse.ArgumentParser()
 logger = get_logger()
@@ -62,9 +64,11 @@ with Engine(custom_parser=parser) as engine:
     else:
         BatchNorm2d = nn.BatchNorm2d
     
-    model=segmodel(cfg=config, criterion=criterion, norm_layer=BatchNorm2d)
+    model = segmodel(cfg=config, criterion=criterion, norm_layer=BatchNorm2d)
     
-    # group weight and config optimizer
+    with open('model_architecture_copy.txt', 'w') as f:
+        print(model, file=f)
+    
     base_lr = config.lr
     if engine.distributed:
         base_lr = config.lr
@@ -100,7 +104,7 @@ with Engine(custom_parser=parser) as engine:
 
     optimizer.zero_grad()
     model.train()
-    logger.info('begin trainning:')
+    logger.info('begin training:')
     
     for epoch in range(engine.state.epoch, config.nepochs+1):
         if engine.distributed:
@@ -111,31 +115,16 @@ with Engine(custom_parser=parser) as engine:
         dataloader = iter(train_loader)
 
         sum_loss = 0
-        iou_scores = []  # Store IoU scores for each batch
-
-        # Initialize lists to store predictions and ground truths for the epoch
-        all_preds = []
-        all_gts = []
-        iou_scores_per_class = [[] for _ in range(6)]
+        num_batches = 0  # To calculate average loss
 
         for idx in pbar:
             engine.update_iteration(epoch, idx)
-
             minibatch = next(dataloader)
-            # print(minibatch)
-            imgs = minibatch['data']
-            gts = minibatch['label']
-            modal_xs = minibatch['modal_x']
-            
-            imgs = imgs.cuda(non_blocking=True)
-            gts = gts.cuda(non_blocking=True)
-            modal_xs = modal_xs.cuda(non_blocking=True)
-
-
-            aux_rate = 0.2
+            imgs = minibatch['data'].cuda(non_blocking=True)
+            gts = minibatch['label'].cuda(non_blocking=True)
+            modal_xs = minibatch['modal_x'].cuda(non_blocking=True)
             loss = model(imgs, modal_xs, gts)
-
-            # reduce the whole loss over multi-gpu
+                        # reduce the whole loss over multi-gpu
             if engine.distributed:
                 reduce_loss = all_reduce_tensor(loss, world_size=engine.world_size)
             
@@ -166,48 +155,7 @@ with Engine(custom_parser=parser) as engine:
         if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
             tb.add_scalar('train_loss', sum_loss / len(pbar), epoch)
             message = f'Epoch {epoch}/{config.nepochs} training complete. Loss: {sum_loss / len(pbar)}'
-            # post_to_discord(DISCORD_WEBHOOK_URL, message)
-
-
-        # After training loop, we perform the validation
-        model.eval()
-        total_val_loss = 0
-        all_val_preds = []
-        all_val_gts = []
-
-        with torch.no_grad():
-            for minibatch in val_loader:
-                imgs = minibatch['data'].numpy()  # Assuming data comes in CPU numpy format
-                modal_xs = minibatch['modal_x'].numpy()
-                gts = minibatch['label'].cuda()  # Assuming labels are used for computing loss on GPU
-
-                preds, refined_preds = [], []
-                for img, modal_x in zip(imgs, modal_xs):
-                    pred, _ = sliding_eval_rgbX(img, modal_x, config.eval_crop_size, config.eval_stride_rate, device='cuda')
-                    preds.append(pred)
-
-                preds = np.stack(preds)  # Stack predictions into a numpy array
-                preds_tensor = torch.from_numpy(preds).cuda()
-                refined_preds_tensor = torch.from_numpy(refined_preds).cuda()
-
-        # Compute loss here if applicable
-        # loss = criterion(refined_preds_tensor, gts)  # Example loss computation
-        # total_val_loss += loss.item()
-
-        # Store predictions and ground truths for metrics computation
-        all_val_preds.extend(preds)
-        all_val_gts.extend(minibatch['label'].numpy())
-
-        avg_val_loss = val_loss / len(val_loader)
-        val_precision = precision_score(all_val_gts, all_val_preds, average='macro')
-        val_recall = recall_score(all_val_gts, all_val_preds, average='macro')
-        val_f1 = f1_score(all_val_gts, all_val_preds, average='macro')
-
-        # Log validation metrics
-        tb.add_scalar('val_loss', avg_val_loss, epoch)
-        tb.add_scalar('val_precision', val_precision, epoch)
-        tb.add_scalar('val_recall', val_recall, epoch)
-        tb.add_scalar('val_f1', val_f1, epoch)
+            post_to_discord(DISCORD_WEBHOOK_URL, message)
 
         if (epoch >= config.checkpoint_start_epoch) and (epoch % config.checkpoint_step == 0) or (epoch == config.nepochs):
             if engine.distributed and (engine.local_rank == 0):

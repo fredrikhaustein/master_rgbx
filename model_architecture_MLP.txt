@@ -1,0 +1,588 @@
+EncoderDecoder(
+  (backbone): mit_b0(
+    (patch_embed1): OverlapPatchEmbed(
+      (proj): Conv2d(3, 32, kernel_size=(7, 7), stride=(4, 4), padding=(3, 3))
+      (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+    )
+    (patch_embed2): OverlapPatchEmbed(
+      (proj): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+    (patch_embed3): OverlapPatchEmbed(
+      (proj): Conv2d(64, 160, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+    )
+    (patch_embed4): OverlapPatchEmbed(
+      (proj): Conv2d(160, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    )
+    (extra_patch_embed1): OverlapPatchEmbed(
+      (proj): Conv2d(3, 32, kernel_size=(7, 7), stride=(4, 4), padding=(3, 3))
+      (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+    )
+    (extra_patch_embed2): OverlapPatchEmbed(
+      (proj): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+    (extra_patch_embed3): OverlapPatchEmbed(
+      (proj): Conv2d(64, 160, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+    )
+    (extra_patch_embed4): OverlapPatchEmbed(
+      (proj): Conv2d(160, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    )
+    (block1): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=32, out_features=32, bias=True)
+          (kv): Linear(in_features=32, out_features=64, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=32, out_features=32, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(32, 32, kernel_size=(8, 8), stride=(8, 8))
+          (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=32, out_features=128, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=128, out_features=32, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=32, out_features=32, bias=True)
+          (kv): Linear(in_features=32, out_features=64, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=32, out_features=32, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(32, 32, kernel_size=(8, 8), stride=(8, 8))
+          (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.014)
+        (norm2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=32, out_features=128, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=128, out_features=32, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+    (extra_block1): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=32, out_features=32, bias=True)
+          (kv): Linear(in_features=32, out_features=64, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=32, out_features=32, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(32, 32, kernel_size=(8, 8), stride=(8, 8))
+          (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=32, out_features=128, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=128, out_features=32, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=32, out_features=32, bias=True)
+          (kv): Linear(in_features=32, out_features=64, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=32, out_features=32, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(32, 32, kernel_size=(8, 8), stride=(8, 8))
+          (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.014)
+        (norm2): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=32, out_features=128, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=128, out_features=32, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (extra_norm1): LayerNorm((32,), eps=1e-06, elementwise_affine=True)
+    (block2): ModuleList(
+      (0-1): 2 x Block(
+        (norm1): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=64, out_features=64, bias=True)
+          (kv): Linear(in_features=64, out_features=128, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=64, out_features=64, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(64, 64, kernel_size=(4, 4), stride=(4, 4))
+          (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.029)
+        (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=64, out_features=256, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=256, out_features=64, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+    (extra_block2): ModuleList(
+      (0-1): 2 x Block(
+        (norm1): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=64, out_features=64, bias=True)
+          (kv): Linear(in_features=64, out_features=128, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=64, out_features=64, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(64, 64, kernel_size=(4, 4), stride=(4, 4))
+          (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.043)
+        (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=64, out_features=256, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=256, out_features=64, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (extra_norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+    (block3): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=160, out_features=160, bias=True)
+          (kv): Linear(in_features=160, out_features=320, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=160, out_features=160, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(160, 160, kernel_size=(2, 2), stride=(2, 2))
+          (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.057)
+        (norm2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=160, out_features=640, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=640, out_features=160, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=160, out_features=160, bias=True)
+          (kv): Linear(in_features=160, out_features=320, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=160, out_features=160, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(160, 160, kernel_size=(2, 2), stride=(2, 2))
+          (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.071)
+        (norm2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=160, out_features=640, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=640, out_features=160, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm3): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+    (extra_block3): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=160, out_features=160, bias=True)
+          (kv): Linear(in_features=160, out_features=320, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=160, out_features=160, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(160, 160, kernel_size=(2, 2), stride=(2, 2))
+          (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.057)
+        (norm2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=160, out_features=640, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=640, out_features=160, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=160, out_features=160, bias=True)
+          (kv): Linear(in_features=160, out_features=320, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=160, out_features=160, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (sr): Conv2d(160, 160, kernel_size=(2, 2), stride=(2, 2))
+          (norm): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+        )
+        (drop_path): DropPath(drop_prob=0.071)
+        (norm2): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=160, out_features=640, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=640)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=640, out_features=160, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (extra_norm3): LayerNorm((160,), eps=1e-06, elementwise_affine=True)
+    (block4): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=256, out_features=256, bias=True)
+          (kv): Linear(in_features=256, out_features=512, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): DropPath(drop_prob=0.086)
+        (norm2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=1024, out_features=256, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=256, out_features=256, bias=True)
+          (kv): Linear(in_features=256, out_features=512, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): DropPath(drop_prob=0.100)
+        (norm2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=1024, out_features=256, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm4): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+    (extra_block4): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=256, out_features=256, bias=True)
+          (kv): Linear(in_features=256, out_features=512, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): DropPath(drop_prob=0.086)
+        (norm2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=1024, out_features=256, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (q): Linear(in_features=256, out_features=256, bias=True)
+          (kv): Linear(in_features=256, out_features=512, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): DropPath(drop_prob=0.100)
+        (norm2): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): DWConv(
+            (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          )
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=1024, out_features=256, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (extra_norm4): LayerNorm((256,), eps=1e-06, elementwise_affine=True)
+    (FRMs): ModuleList(
+      (0): FeatureRectifyModule(
+        (channel_weights): ChannelWeights(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (max_pool): AdaptiveMaxPool2d(output_size=1)
+          (mlp): Sequential(
+            (0): Linear(in_features=128, out_features=128, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Linear(in_features=128, out_features=64, bias=True)
+            (3): Sigmoid()
+          )
+        )
+        (spatial_weights): SpatialWeights(
+          (mlp): Sequential(
+            (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1))
+            (1): ReLU(inplace=True)
+            (2): Conv2d(32, 2, kernel_size=(1, 1), stride=(1, 1))
+            (3): Sigmoid()
+          )
+        )
+      )
+      (1): FeatureRectifyModule(
+        (channel_weights): ChannelWeights(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (max_pool): AdaptiveMaxPool2d(output_size=1)
+          (mlp): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Linear(in_features=256, out_features=128, bias=True)
+            (3): Sigmoid()
+          )
+        )
+        (spatial_weights): SpatialWeights(
+          (mlp): Sequential(
+            (0): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+            (1): ReLU(inplace=True)
+            (2): Conv2d(64, 2, kernel_size=(1, 1), stride=(1, 1))
+            (3): Sigmoid()
+          )
+        )
+      )
+      (2): FeatureRectifyModule(
+        (channel_weights): ChannelWeights(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (max_pool): AdaptiveMaxPool2d(output_size=1)
+          (mlp): Sequential(
+            (0): Linear(in_features=640, out_features=640, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Linear(in_features=640, out_features=320, bias=True)
+            (3): Sigmoid()
+          )
+        )
+        (spatial_weights): SpatialWeights(
+          (mlp): Sequential(
+            (0): Conv2d(320, 160, kernel_size=(1, 1), stride=(1, 1))
+            (1): ReLU(inplace=True)
+            (2): Conv2d(160, 2, kernel_size=(1, 1), stride=(1, 1))
+            (3): Sigmoid()
+          )
+        )
+      )
+      (3): FeatureRectifyModule(
+        (channel_weights): ChannelWeights(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (max_pool): AdaptiveMaxPool2d(output_size=1)
+          (mlp): Sequential(
+            (0): Linear(in_features=1024, out_features=1024, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Linear(in_features=1024, out_features=512, bias=True)
+            (3): Sigmoid()
+          )
+        )
+        (spatial_weights): SpatialWeights(
+          (mlp): Sequential(
+            (0): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+            (1): ReLU(inplace=True)
+            (2): Conv2d(256, 2, kernel_size=(1, 1), stride=(1, 1))
+            (3): Sigmoid()
+          )
+        )
+      )
+    )
+    (FFMs): ModuleList(
+      (0): FeatureFusionModule(
+        (cross): CrossPath(
+          (channel_proj1): Linear(in_features=32, out_features=64, bias=True)
+          (channel_proj2): Linear(in_features=32, out_features=64, bias=True)
+          (act1): ReLU(inplace=True)
+          (act2): ReLU(inplace=True)
+          (cross_attn): CrossAttention(
+            (kv1): Linear(in_features=32, out_features=64, bias=False)
+            (kv2): Linear(in_features=32, out_features=64, bias=False)
+          )
+          (end_proj1): Linear(in_features=64, out_features=32, bias=True)
+          (end_proj2): Linear(in_features=64, out_features=32, bias=True)
+          (norm1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        )
+        (channel_emb): ChannelEmbed(
+          (residual): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (channel_embed): Sequential(
+            (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1))
+            (1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32)
+            (2): ReLU(inplace=True)
+            (3): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1))
+            (4): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (norm): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): FeatureFusionModule(
+        (cross): CrossPath(
+          (channel_proj1): Linear(in_features=64, out_features=128, bias=True)
+          (channel_proj2): Linear(in_features=64, out_features=128, bias=True)
+          (act1): ReLU(inplace=True)
+          (act2): ReLU(inplace=True)
+          (cross_attn): CrossAttention(
+            (kv1): Linear(in_features=64, out_features=128, bias=False)
+            (kv2): Linear(in_features=64, out_features=128, bias=False)
+          )
+          (end_proj1): Linear(in_features=128, out_features=64, bias=True)
+          (end_proj2): Linear(in_features=128, out_features=64, bias=True)
+          (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )
+        (channel_emb): ChannelEmbed(
+          (residual): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (channel_embed): Sequential(
+            (0): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+            (1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64)
+            (2): ReLU(inplace=True)
+            (3): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1))
+            (4): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (norm): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (2): FeatureFusionModule(
+        (cross): CrossPath(
+          (channel_proj1): Linear(in_features=160, out_features=320, bias=True)
+          (channel_proj2): Linear(in_features=160, out_features=320, bias=True)
+          (act1): ReLU(inplace=True)
+          (act2): ReLU(inplace=True)
+          (cross_attn): CrossAttention(
+            (kv1): Linear(in_features=160, out_features=320, bias=False)
+            (kv2): Linear(in_features=160, out_features=320, bias=False)
+          )
+          (end_proj1): Linear(in_features=320, out_features=160, bias=True)
+          (end_proj2): Linear(in_features=320, out_features=160, bias=True)
+          (norm1): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((160,), eps=1e-05, elementwise_affine=True)
+        )
+        (channel_emb): ChannelEmbed(
+          (residual): Conv2d(320, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (channel_embed): Sequential(
+            (0): Conv2d(320, 160, kernel_size=(1, 1), stride=(1, 1))
+            (1): Conv2d(160, 160, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=160)
+            (2): ReLU(inplace=True)
+            (3): Conv2d(160, 160, kernel_size=(1, 1), stride=(1, 1))
+            (4): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (norm): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (3): FeatureFusionModule(
+        (cross): CrossPath(
+          (channel_proj1): Linear(in_features=256, out_features=512, bias=True)
+          (channel_proj2): Linear(in_features=256, out_features=512, bias=True)
+          (act1): ReLU(inplace=True)
+          (act2): ReLU(inplace=True)
+          (cross_attn): CrossAttention(
+            (kv1): Linear(in_features=256, out_features=512, bias=False)
+            (kv2): Linear(in_features=256, out_features=512, bias=False)
+          )
+          (end_proj1): Linear(in_features=512, out_features=256, bias=True)
+          (end_proj2): Linear(in_features=512, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        )
+        (channel_emb): ChannelEmbed(
+          (residual): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (channel_embed): Sequential(
+            (0): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+            (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+            (2): ReLU(inplace=True)
+            (3): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1))
+            (4): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (norm): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+    )
+  )
+  (decode_head): DecoderHead(
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (linear_c4): MLP(
+      (proj): Linear(in_features=256, out_features=512, bias=True)
+    )
+    (linear_c3): MLP(
+      (proj): Linear(in_features=160, out_features=512, bias=True)
+    )
+    (linear_c2): MLP(
+      (proj): Linear(in_features=64, out_features=512, bias=True)
+    )
+    (linear_c1): MLP(
+      (proj): Linear(in_features=32, out_features=512, bias=True)
+    )
+    (linear_fuse): Sequential(
+      (0): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(512, eps=0.001, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (linear_pred): Conv2d(512, 2, kernel_size=(1, 1), stride=(1, 1))
+  )
+  (criterion): CrossEntropyLoss()
+)

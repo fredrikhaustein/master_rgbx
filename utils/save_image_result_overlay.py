@@ -156,16 +156,16 @@ def process_all_common_files(base_folder, predictions_folder, ground_truth_folde
 
 
 # Example usage
-# base_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_14_vegetation_ground_truth_binary/RGBFolder'
-# predictions_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/results_image/result_augmented_building'
-# ground_truth_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_15_building_binary/LabelFolder'
-# output_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_master_images_direct_method_overlay_white'
+base_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_14_vegetation_ground_truth_binary/RGBFolder'
+predictions_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results_new_dataset/Dataset_17_fkb_ndvi_01_indirect'
+ground_truth_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_18_fkb_and_manually_label_impervious_surfaces/LabelFolder'
+output_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/result_master_image_new_dataset/Dataset_17_with_model_indirect_ndvi_01'
 
 
 # Example usage Oslo
-base_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_13_test_oslo/RGBFolder'
-predictions_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/results_image/oslo_test_area'
-ground_truth_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_13_test_oslo/LabelFolder'
-output_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_oslo_master_images_direct_method_overlay_white'
+# base_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_13_test_oslo/RGBFolder'
+# predictions_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/results_image/oslo_test_area'
+# ground_truth_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/datasets/Dataset_13_test_oslo/LabelFolder'
+# output_folder = '/cluster/home/fredhaus/imperviousSurfaces/rgbx_seg/RGBX_Semantic_Segmentation/results/result_oslo_master_images_direct_method_overlay_white'
 
 process_all_common_files(base_folder, predictions_folder, ground_truth_folder, output_folder)

@@ -45,7 +45,3 @@ class PSPDecoder(nn.Module):
         x = self.final(x)  # Apply final layers to get predictions
         return x
 
-# Example Usage
-# Define your model
-# model = PSPDecoder(in_channels=256, num_classes=40)  # Assume in_channels=256 from last layer of your backbone
-# output = model(input_tensor)  # Assuming input_tensor is the output from the backbone
